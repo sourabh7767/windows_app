@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Subscription;
+use App\Models\Subscription; 
 use Illuminate\Http\Exceptions\HttpResponseException;
 
 use Validator;
