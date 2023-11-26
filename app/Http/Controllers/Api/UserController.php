@@ -72,15 +72,16 @@ class UserController extends Controller
     public function updateProfile(Request $request){
 
         $rules = [
-            'emp_id' =>'required',
-    		'full_name'=>'required',
-            'username' =>'required',
+            'user_id' => 'required',
+            'emp_id' =>'sometimes',
+    		'full_name'=>'sometimes',
+            'username' =>'sometimes',
             'email' => [
-                'required',
+                'sometimes',
                 'email:rfc,dns,filter',
                 Rule::unique('users')->ignore($request->user_id, 'id')->whereNull('deleted_at')
             ],
-            'password' => 'required',
+            'password' => 'sometimes',
         ];
         $validator = Validator::make($request->all(), $rules);
         if ($validator->fails()) {
@@ -92,12 +93,21 @@ class UserController extends Controller
         if (!$userObj) {
             return returnValidationErrorResponse('User not found');
         }
-
+        if(!empty($request->full_name)){
         $userObj->full_name = $request->full_name;
+        }
+        if(!empty($request->emp_id)){
         $userObj->employee_id = $request->emp_id;
+        }
+        if(!empty($request->username)){
         $userObj->username = $request->username;
+        }
+        if(!empty($request->email)){
         $userObj->email = $request->email;
+        }
+        if(!empty($request->password)){
         $userObj->password = $request->password;
+        }
         if(!$userObj->save()){
             return returnErrorResponse('Unable to save data');
         }
