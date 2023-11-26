@@ -56,7 +56,7 @@ class UserController extends Controller
 
     public function getEmployeWithSearch(Request $request)
     {
-        $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 10;
+        $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 20;
         $searchQuery = $request->input('search');
 
         $query = User::where('role', '!=', User::ROLE_ADMIN)
@@ -72,7 +72,7 @@ class UserController extends Controller
     public function updateProfile(Request $request){
 
         $rules = [
-            // 'employe_id' =>'required',
+            'emp_id' =>'required',
     		'full_name'=>'required',
             'username' =>'required',
             'email' => [
@@ -94,7 +94,7 @@ class UserController extends Controller
         }
 
         $userObj->full_name = $request->full_name;
-        // $userObj->employe_id = $request->employe_id;
+        $userObj->employee_id = $request->emp_id;
         $userObj->username = $request->username;
         $userObj->email = $request->email;
         $userObj->password = $request->password;
@@ -121,7 +121,8 @@ class UserController extends Controller
             return returnValidationErrorResponse('User not found');
         }
         if($userObj->delete()){
-            return returnSuccessResponse('Employee deleted successfully');
+            $users = User::getAllUsersResponse();
+            return returnSuccessResponse('Employee deleted successfully',$users);
         }
     }
    
