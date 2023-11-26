@@ -312,7 +312,7 @@ class User extends Authenticatable
     {
         
         $query = User::where('role', '!=', User::ROLE_ADMIN);
-        $paginate = $query->paginate(20)->setPath(env('APP_URL')."/api/v1/admin/getEmployeWithSearch");
+        $paginate = $query->paginate(15)->setPath(env('APP_URL')."/api/v1/admin/getEmployeWithSearch");
         return $paginate;
     }
 }

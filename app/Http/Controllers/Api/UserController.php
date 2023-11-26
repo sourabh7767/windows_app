@@ -56,7 +56,7 @@ class UserController extends Controller
 
     public function getEmployeWithSearch(Request $request)
     {
-        $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 20;
+        $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 15;
         $searchQuery = $request->input('search');
 
         $query = User::where('role', '!=', User::ROLE_ADMIN)
