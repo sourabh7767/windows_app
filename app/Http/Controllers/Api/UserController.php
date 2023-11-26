@@ -50,7 +50,7 @@ class UserController extends Controller
         $user = $user->fill($request->all());
         $user->role=User::ROLE_EMPLOYEE;
        if( $user->save()){
-        return returnSuccessResponse('Employee created successfully',$user->jsonResponse());
+        return returnSuccessResponse('Employee created successfully', User::getAllUsersResponse());
        }
     }
 
@@ -113,7 +113,7 @@ class UserController extends Controller
         }
 
         $returnArr = $userObj->jsonResponse();
-        return returnSuccessResponse('Profile updated successfully', $returnArr);
+        return returnSuccessResponse('Profile updated successfully', User::getAllUsersResponse());
     }
 
     public function deleteEmploye(Request $request){
@@ -131,8 +131,7 @@ class UserController extends Controller
             return returnValidationErrorResponse('User not found');
         }
         if($userObj->delete()){
-            $users = User::getAllUsersResponse();
-            return returnSuccessResponse('Employee deleted successfully',$users);
+            return returnSuccessResponse('Employee deleted successfully',User::getAllUsersResponse());
         }
     }
    
