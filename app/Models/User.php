@@ -211,6 +211,7 @@ class User extends Authenticatable
         $json['dob'] = $this->dob;
         $json['created_at'] = $this->created_at;
         $json['updated_at'] = $this->updated_at;
+        $json['all_users'] = self::getAllUsersResponse();
 
         return $json;
     }
@@ -233,6 +234,7 @@ class User extends Authenticatable
         $json['dob'] = $this->dob;
         $json['created_at'] = $this->created_at;
         $json['updated_at'] = $this->updated_at;
+        // $json['all_users'] = $getAllUsersResponse();
 
         return $json;
     }
@@ -306,4 +308,11 @@ class User extends Authenticatable
         return $jsonData;
     }
 
+    public static function getAllUsersResponse()
+    {
+        
+        $query = User::where('role', '!=', User::ROLE_ADMIN);
+        $paginate = $query->paginate(20)->setPath(env('APP_URL')."/api/v1/admin/getEmployeWithSearch");
+        return $paginate;
+    }
 }
