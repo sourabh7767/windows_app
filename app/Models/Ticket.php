@@ -62,5 +62,16 @@ class Ticket extends Model
         $jsonData = $this->JsonResponseForTickets();
         return $jsonData;
     }
+
+    public static function getTricketList()
+    {
+        $query = Ticket::query();
+        if(auth()->user()->role == User::ROLE_ADMIN){
+        $query->where('status',Ticket::IN_PROGRESS);
+        }else{
+            $query->where('user_id',auth()->user()->id)->where('status',Ticket::IN_PROGRESS);
+        }
+       return $query->paginate(20);
+    }
     
 }
