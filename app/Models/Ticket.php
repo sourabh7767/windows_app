@@ -13,6 +13,11 @@ class Ticket extends Model
     const COMPLETED_BY_EMPLOYEE = 2;
     const COMPLETED_BY_ADMIN = 3;
 
+
+    public function userInfo()
+    {
+        return $this->hasOne(User::class,'id','user_id');
+    }
     public function getStatusName($value) {
         switch ($value) {
             case self::IN_PROGRESS:
@@ -71,7 +76,7 @@ class Ticket extends Model
         }else{
             $query->where('user_id',auth()->user()->id)->where('status',Ticket::IN_PROGRESS)->orderBy('id','desc');
         }
-       return $query->paginate(20);
+       return $query->paginate(20)->setPath("http://127.0.0.1:8000/api/v1/user/ticketList");
     }
-    
+
 }

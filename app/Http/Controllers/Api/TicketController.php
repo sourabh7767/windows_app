@@ -39,7 +39,7 @@ class TicketController extends Controller
     public function ticketList(Request $request)
     {
         $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 10;
-        $query = Ticket::query();
+        $query = Ticket::with('userInfo');
         if($request->user()->role == User::ROLE_ADMIN){
         $query->where('status',Ticket::IN_PROGRESS)->orderBy('id','desc');
         }else{
