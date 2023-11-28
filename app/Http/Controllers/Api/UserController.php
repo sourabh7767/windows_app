@@ -64,7 +64,7 @@ class UserController extends Controller
                 $query->orWhere('username', 'like', '%' . $searchQuery . '%')
                     ->orWhere('full_name', 'like', '%' . $searchQuery . '%')
                     ->orWhere('email', 'like', '%' . $searchQuery . '%');
-            });
+            })->orderBy('id','desc');
         $paginate = $query->paginate($perPageRecords);
 
         return returnSuccessResponse("User list", $paginate);

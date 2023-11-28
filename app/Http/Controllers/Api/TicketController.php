@@ -33,7 +33,7 @@ class TicketController extends Controller
         $ticketObj->description = $request->description;
         $ticketObj->status = Ticket::IN_PROGRESS;
         if($ticketObj->save())
-        return returnSuccessResponse("Ticked raised successfully",$ticketObj->JsonResponseForTickets());
+        return returnSuccessResponse("Ticked raised successfully",Ticket::getTricketList());
     }
 
     public function ticketList(Request $request)
@@ -41,9 +41,16 @@ class TicketController extends Controller
         $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 10;
         $query = Ticket::query();
         if($request->user()->role == User::ROLE_ADMIN){
-        $query->where('status',Ticket::IN_PROGRESS);
+        $query->where('status',Ticket::IN_PROGRESS)->orderBy('id','desc');
         }else{
-            $query->where('user_id',$request->user()->id)->where('status',Ticket::IN_PROGRESS);
+            $query->where('user_id',$request->user()->id)->where('status',Ticket::IN_PROGRESS)->orderBy('id','desc');
+        }
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function ($subquery) use ($search) {
+                $subquery->where('title', 'like', '%' . $search . '%')
+                         ->orWhere('description', 'like', '%' . $search . '%');
+            });
         }
         
         $paginate = $query->paginate($perPageRecords);
@@ -65,6 +72,6 @@ class TicketController extends Controller
         }
         $ticketObj->status = $status;
         if($ticketObj->save())
-        return returnSuccessResponse("Ticket status changed successfully",$ticketObj->JsonResponseForTickets());
+        return returnSuccessResponse("Ticket status changed successfully",Ticket::getTricketList());
     }
 }

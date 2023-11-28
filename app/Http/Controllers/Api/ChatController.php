@@ -36,13 +36,16 @@ class ChatController extends Controller
         }
         $chatObj->ticket_id = $request->ticket_id;
         $chatObj->message = $request->message;
+
+        $query = TicketChat::where('ticket_id',$request->ticket_id);
+        $allMessages = $query->paginate(20);
         if($chatObj->save())
-        return returnSuccessResponse("Message sent", $chatObj->JsonResponseForTicketChat(true));
+        return returnSuccessResponse("Message sent", $allMessages);
     }
 
     public function getMessages(Request $request)
     {
-        $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 10;
+        $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 20;
        $query = TicketChat::where('ticket_id',$request->ticket_id);
        $paginate = $query->paginate($perPageRecords);
 
