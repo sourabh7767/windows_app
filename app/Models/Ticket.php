@@ -76,7 +76,7 @@ class Ticket extends Model
         }else{
             $query->where('user_id',auth()->user()->id)->where('status',Ticket::IN_PROGRESS)->orderBy('id','desc');
         }
-       return $query->paginate(20)->setPath("http://127.0.0.1:8000/api/v1/user/ticketList");
+       return $query->paginate(20)->setPath(env("APP_URL")."/api/v1/user/ticketList");
     }
 
 }
