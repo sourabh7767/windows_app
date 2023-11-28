@@ -67,9 +67,9 @@ class Ticket extends Model
     {
         $query = Ticket::query();
         if(auth()->user()->role == User::ROLE_ADMIN){
-        $query->where('status',Ticket::IN_PROGRESS);
+        $query->where('status',Ticket::IN_PROGRESS)->orderBy('id','desc');
         }else{
-            $query->where('user_id',auth()->user()->id)->where('status',Ticket::IN_PROGRESS);
+            $query->where('user_id',auth()->user()->id)->where('status',Ticket::IN_PROGRESS)->orderBy('id','desc');
         }
        return $query->paginate(20);
     }
