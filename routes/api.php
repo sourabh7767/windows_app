@@ -37,6 +37,7 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 			Route::post('/changeTicketStatus', 'TicketController@changeTicketStatus')->name('changeTicketStatus');
 			Route::post('/sendMessage', 'ChatController@sendMessage')->name('sendMessage');
 			Route::get('/getMessages', 'ChatController@getMessages')->name('getMessages');
+			Route::post('/get/history', 'EmployeeController@getHistory')->name('getHistory');
 			
 			Route::get('/logout', 'HomeController@logout')->name('logout');
 		

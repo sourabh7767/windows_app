@@ -42,14 +42,27 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
+    
     /**
      * The attributes that should be cast.
      *
      * @var array<string, string>
      */
-   
     
+    protected $appends = ['custom_status','custom_status_title'];
+     public function getCustomStatusAttribute()
+     {
+         $latestTiming = UsersTiming::where('user_id',$this->id)->orderBy('id','desc')->first();
+         return $latestTiming ? $latestTiming->status : null;
+     }
+     public function getCustomStatusTitleAttribute()
+     {
+         $latestTiming = UsersTiming::where('user_id',$this->id)->orderBy('id','desc')->first();
+         return $latestTiming ? UsersTiming::getStatusName($latestTiming->status) : null;
+     }
+ 
+     // Define the relationship with Timing model
+     
     public function getUserRole(){
         return $this->belongsTo(Role::class, 'role');
     }
@@ -177,6 +190,10 @@ class User extends Authenticatable
 
         $query = $query->get();
         return $query;
+    }
+    public function timings()
+    {
+        return $this->hasMany(UsersTiming::class, 'user_id');
     }
 
     public function generateEmailVerificationOtp(){
@@ -314,5 +331,5 @@ class User extends Authenticatable
         $query = User::where('role', '!=', User::ROLE_ADMIN);
         $paginate = $query->paginate(20)->setPath(env('APP_URL')."/api/v1/admin/getEmployeWithSearch");
         return $paginate;
-    }
+    } 
 }
