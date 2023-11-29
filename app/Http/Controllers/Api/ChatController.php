@@ -37,7 +37,7 @@ class ChatController extends Controller
         $chatObj->ticket_id = $request->ticket_id;
         $chatObj->message = $request->message;
 
-        $query = TicketChat::where('ticket_id',$request->ticket_id);
+        $query = TicketChat::where('ticket_id',$request->ticket_id)->orderBy('id','desc');
         $allMessages = $query->paginate(20);
         if($chatObj->save())
         return returnSuccessResponse("Message sent", $allMessages);
