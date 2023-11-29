@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Models\UsersTiming;
 use Illuminate\Http\Request;
 use App\Models\Page;
 use App\Models\ContactUs;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Carbon;
 use Validator;
 
 class HomeController extends Controller
@@ -17,9 +20,35 @@ class HomeController extends Controller
         if (!$userObj) {
             return returnValidationErrorResponse('You are not authorized');
         }
-
+        if($request->has("date_time") && !empty($request->date_time)){
+            $dateTime = $request->date_time;
+        }else{
+            $dateTime = Carbon::now('UTC');
+        }
+        if($userObj->role == User::ROLE_EMPLOYEE){
+            $userTimingObj = new  UsersTiming();
+            $userTimingObj->user_id = $userObj->id;
+            $userTimingObj->employee_id = $userObj->employee_id;
+            $userTimingObj->status = UsersTiming::CLOCK_OUT;
+            $userTimingObj->date_time = $dateTime;
+            $userTimingObj->server_time = Carbon::now('UTC');
+            $userTimingObj->save();
+            if($request->has("date_time") && !empty($request->date_time)){
+                $getClockIn = UsersTiming::where('user_id',$userObj->id)->whereDate('server_time',Carbon::now('UTC'))->where('status',UsersTiming::CLOCK_IN)->orderBy('id','desc')->first();
+                $getClockOut =UsersTiming::where('user_id',$userObj->id)->whereDate('server_time',Carbon::now('UTC'))->where('status',UsersTiming::CLOCK_OUT)->orderBy('id','desc')->first();
+                
+                $clockInServerTime = Carbon::parse($getClockIn->server_time);
+                $clockOutServerTime = Carbon::parse($getClockOut->server_time);
+                $diff = $clockInServerTime->diff($clockOutServerTime);
+                $timeToBeUpdate = UsersTiming::find($userTimingObj->id);
+                $timeToBeUpdate->update([
+                    'total_hours' =>  $diff->format('%H:%I:%S')
+                ]);
+            }
+        }
+        // $$timeToBeUpdate->total_hours = $diff; //->format('');
         $userObj->tokens()->delete();
-        return returnSuccessResponse('User logged out successfully');
+        return returnSuccessResponse('User logged out successfully',@$timeToBeUpdate);
     }
     public function getPage(Request $request){
 

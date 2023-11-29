@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class UsersTiming extends Model
 {
     use HasFactory;
+    protected $guarded = [];
     const CLOCK_IN = 1;
     const CLOCK_OUT = 2;
     const LUNCH_IN = 3;
@@ -16,7 +17,7 @@ class UsersTiming extends Model
     const MEETING_OUT = 6;
     const BREAK_IN = 7;
     const BREAK_OUT = 8;
-    public function getStatusName($value) {
+    public static function getStatusName($value) {
         switch ($value) {
             case self::CLOCK_IN:
                 return 'Clock In';
@@ -45,11 +46,15 @@ class UsersTiming extends Model
         $json['user_id'] = $this->user_id;
         $json['employee_id'] = $this->employee_id;
         $json['status'] = $this->status;
-        $json['status_title'] = $this->getStatusName($this->status);
+        $json['status_title'] = self::getStatusName($this->status);
         $json['date_time'] = $this->date_time;
         $json['last_active'] = 1;//$this->last_active;
         $json['created_at'] = $this->created_at;
         $json['updated_at'] = $this->updated_at;
         return $json;
+    }
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
