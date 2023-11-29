@@ -45,7 +45,7 @@ class ChatController extends Controller
     public function getMessages(Request $request)
     {
         $perPageRecords = !empty($request->query('per_page_record')) ? $request->query('per_page_record') : 20;
-       $query = TicketChat::where('ticket_id',$request->ticket_id);
+       $query = TicketChat::where('ticket_id',$request->ticket_id)->orderBy('id','desc');
        $paginate = $query->paginate($perPageRecords);
 
        return returnSuccessResponse("All messages", $paginate);
