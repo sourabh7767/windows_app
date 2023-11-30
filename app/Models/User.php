@@ -328,7 +328,7 @@ class User extends Authenticatable
     public static function getAllUsersResponse()
     {
         
-        $query = User::where('role', '!=', User::ROLE_ADMIN);
+        $query = User::where('role', '!=', User::ROLE_ADMIN)->orderBy("id","desc");
         $paginate = $query->paginate(15)->setPath(env('APP_URL')."/api/v1/admin/getEmployeWithSearch");
         return $paginate;
     } 

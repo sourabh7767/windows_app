@@ -70,7 +70,7 @@ class Ticket extends Model
 
     public static function getTricketList()
     {
-        $query = Ticket::query();
+        $query = Ticket::with('userInfo');
         if(auth()->user()->role == User::ROLE_ADMIN){
         $query->where('status',Ticket::IN_PROGRESS)->orderBy('id','desc');
         }else{
