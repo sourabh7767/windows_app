@@ -20,10 +20,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         //$schedule->command('expire_subscription')->hourly();
-        $schedule->call('App\Http\Controllers\CronJobController@getCustomersFromLogiwa')->everyTwoHours();
-        $schedule->call('App\Http\Controllers\CronJobController@getItemsIncrementalDataFromLogiwa')->everyTwoHours();
+        $schedule->command('send:break-reminder')->everyMinute(); // Adjust the schedule as needed
+        $schedule->command('send:lunch-break-reminder')->everyMinute();
     }
+
 
     /**
      * Register the commands for the application.

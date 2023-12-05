@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\SendNoActivityMailToAdmin;
 use App\Models\User;
 use App\Models\UsersTiming;
+use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Http\Request;
 use App\Models\Page;
 use App\Models\ContactUs;
@@ -85,5 +87,22 @@ public function contactUs(Request $request,ContactUs $contactUs){
 
         return returnErrorResponse("Something went wrong.");
 
+}
+public function noActivity(Request $request)
+{
+    $userObj = $request->user();
+        $details = [
+            'user_name' => $userObj->full_name,
+            'user_email' => $userObj->email,
+            'employee_id' => $userObj->employee_id,
+            'body' => "is inactive more then 15 min",
+            'subject' => "Regarding no activity of employee"
+        ];
+        try{
+            \Mail::to('sssingh70875@gmail.com')->send(new SendNoActivityMailToAdmin($details));
+            } catch (\Throwable $th) {
+                return returnErrorResponse("Unable to send mail");
+            }
+    return returnSuccessResponse("Mail sent successfully");
 }
 }
