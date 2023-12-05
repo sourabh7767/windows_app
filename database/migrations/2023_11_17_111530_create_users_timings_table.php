@@ -17,7 +17,7 @@ class CreateUsersTimingsTable extends Migration
             $table->id();
             $table->bigInteger('user_id');
             $table->bigInteger('employee_id');
-            $table->timestamp('date_time');
+            $table->dateTime('date_time');
             $table->string('status')->comment("
             clock_in => 1
             clock_out => 2

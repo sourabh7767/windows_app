@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\TicketChat;
 use Illuminate\Http\Request;
 use App\Models\Ticket;
 use App\Models\UsersTiming;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\Facades\DB;
 use Validator;
 use Auth;
 
@@ -26,13 +28,26 @@ class TicketController extends Controller
             $errorMessages = $validator->errors()->all();
             throw new HttpResponseException(returnValidationErrorResponse($errorMessages[0]));
         }
-        $userObj = $request->user();
-        $ticketObj = new Ticket();
-        $ticketObj->user_id = $userObj->id;
-        $ticketObj->title = $request->title;
-        $ticketObj->description = $request->description;
-        $ticketObj->status = Ticket::IN_PROGRESS;
-        if($ticketObj->save())
+        try {
+            DB::beginTransaction();
+            $userObj = $request->user();
+            $ticketObj = new Ticket();
+            $ticketObj->user_id = $userObj->id;
+            $ticketObj->title = $request->title;
+            $ticketObj->description = $request->description;
+            $ticketObj->status = Ticket::IN_PROGRESS;
+            $ticketObj->save();
+            $ticketChatObj = new TicketChat();
+            $ticketChatObj->ticket_id = $ticketObj->id;
+            $ticketChatObj->from_id = $userObj->id;
+            $ticketChatObj->to_id = 1;
+            $ticketChatObj->message = $request->description;
+            $ticketChatObj->save();
+            DB::commit();
+        } catch (\Throwable $th) {
+            DB::rollBack();
+            return returnSuccessResponse($th->getMessage());
+        }
         return returnSuccessResponse("Ticked raised successfully",Ticket::getTricketList());
     }
 

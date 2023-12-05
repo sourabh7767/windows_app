@@ -81,6 +81,7 @@ class EmployeeController extends Controller
         $userTimingObj->employee_id = $userObj->employee_id;
         $userTimingObj->status = $request->status;
         $userTimingObj->date_time = $request->date_time;
+        $userTimingObj->server_time = Carbon::now('UTC');
         if($userTimingObj->save())
         return returnSuccessResponse('Clocked In', $userTimingObj->JsonResponseOfClockIns());
     }
