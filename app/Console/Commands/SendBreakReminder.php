@@ -68,7 +68,7 @@ class SendBreakReminder extends Command
                 'subject' => "Regarding break reminder"
             ];
             try{
-                \Mail::to('sssingh70875@gmail.com')->send(new SendNoActivityMailToAdmin($details));
+                \Mail::to(env("ADMIN_EMAIL"))->send(new SendNoActivityMailToAdmin($details));
             } catch (\Throwable $th) {
                     $this->info('Break reminder emails sent successfully.');
                 }

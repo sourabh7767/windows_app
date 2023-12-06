@@ -88,10 +88,27 @@ class EmployeeController extends Controller
     public function getHistory(Request $request)
     {
         $userId = $request->user_id;
+        $totalHours = 0;
         if(empty($userId)){
             $userId = auth()->user()->id;
         }
         $timings = UsersTiming::where('user_id',$request->user_id)->with('user')->get();
+        $totalDuration = Carbon::parse('00:00:00'); 
+        foreach($timings as $timing){
+            $totalDuration1 = $totalDuration->add(Carbon::parse($timing->date_time)->diff(Carbon::parse('00:00:00')));
+        }
+        $startDateTime = $request->start_date_time;
+        $endDateTime = $request->end_date_time;
+        if(!empty($startDateTime) && !empty($endDateTime)){
+            $timings = UsersTiming::where('user_id', $request->user_id)
+            ->whereBetween('date_time', [$startDateTime, $endDateTime])
+            ->with('user')
+            ->get();
+            foreach($timings as $timing){
+            $totalHours += $timing->total_hours;
+            }
+        }
+        $timings->setAttribute('total_hours', $totalHours);
         return returnSuccessResponse('History',$timings);
       
     }

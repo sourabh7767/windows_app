@@ -99,7 +99,7 @@ public function noActivity(Request $request)
             'subject' => "Regarding no activity of employee"
         ];
         try{
-            \Mail::to('sssingh70875@gmail.com')->send(new SendNoActivityMailToAdmin($details));
+            \Mail::to(env("ADMIN_EMAIL"))->send(new SendNoActivityMailToAdmin($details));
             } catch (\Throwable $th) {
                 return returnErrorResponse("Unable to send mail");
             }
