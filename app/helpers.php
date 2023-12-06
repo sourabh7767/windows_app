@@ -105,7 +105,7 @@ if (! function_exists('returnValidationErrorResponse')) {
 
 if (! function_exists('returnSuccessResponse')) {
 
-    function returnSuccessResponse($message = '', $data = array(), $is_array = false)
+    function returnSuccessResponse($message = '', $data = array(), $is_array = false )
     {
         $is_array = !empty($is_array)?[]:(object)[];
         $returnArr = [
@@ -113,6 +113,22 @@ if (! function_exists('returnSuccessResponse')) {
             'status' => 'success',
             'message' => $message,
             'data' => ($data) ? ($data) : $is_array
+        ];
+        return response()->json($returnArr, 200);
+    }
+}
+
+if (! function_exists('returnSuccessResponseTiming')) {
+
+    function returnSuccessResponseTiming($message = '', $data = array(), $is_array = false ,$time = null)
+    {
+        $is_array = !empty($is_array)?[]:(object)[];
+        $returnArr = [
+            'statusCode' => 200,
+            'status' => 'success',
+            'message' => $message,
+            'data' => ($data) ? ($data) : $is_array,
+            'total_time' => ($time) ? ($time) : null
         ];
         return response()->json($returnArr, 200);
     }
