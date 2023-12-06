@@ -92,23 +92,23 @@ class EmployeeController extends Controller
         if(empty($userId)){
             $userId = auth()->user()->id;
         }
-        $results = UsersTiming::where('user_id', $userId)
-        ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
-        ->paginate();
-        $totalSeconds = $results->sum('total_seconds');
-        $totalHours = gmdate("H:i:s", $totalSeconds);
-        $startDateTime = $request->start_date_time;
-        $endDateTime = $request->end_date_time;
-        if(!empty($startDateTime) && !empty($endDateTime)){
-            $results = UsersTiming::whereBetween('date_time', [$startDateTime, $endDateTime])
-            ->where('user_id', $userId)
-            ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
-            ->paginate();
-            $totalSeconds = $results->sum('total_seconds');
-            $totalHours = gmdate("H:i:s", $totalSeconds);
-        }
-        $data = ['main_data' => $results,'total_hours' => $totalHours ];
-        return returnSuccessResponse('History',$data);
+        $timings = UsersTiming::where('user_id',$userId)->with('user')->paginate();
+        // foreach($timings as $timing){
+        //     $totalHours += $timing->total_hours;
+        //     }
+        // $startDateTime = $request->start_date_time;
+        // $endDateTime = $request->end_date_time;
+        // if(!empty($startDateTime) && !empty($endDateTime)){
+        //     $timings = UsersTiming::where('user_id', $request->user_id)
+        //     ->whereBetween('date_time', [$startDateTime, $endDateTime])
+        //     ->with('user')
+        //     ->get();
+        //     foreach($timings as $timing){
+        //     $totalHours += $timing->total_hours;
+        //     }
+        // }
+        // $timings->setAttribute('total_hours', $totalHours);
+        return returnSuccessResponse('History',$timings);
       
     }
    
