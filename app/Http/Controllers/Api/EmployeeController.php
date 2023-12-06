@@ -92,7 +92,7 @@ class EmployeeController extends Controller
         if(empty($userId)){
             $userId = auth()->user()->id;
         }
-        $timings = UsersTiming::where('user_id',$userId)->with('user')->paginate();
+        $timings = UsersTiming::where('user_id',$userId)->with('user')->get();
         // foreach($timings as $timing){
         //     $totalHours += $timing->total_hours;
         //     }
