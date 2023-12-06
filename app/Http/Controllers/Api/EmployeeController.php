@@ -92,24 +92,23 @@ class EmployeeController extends Controller
         if(empty($userId)){
             $userId = auth()->user()->id;
         }
-        $timings = UsersTiming::where('user_id',$request->user_id)->with('user')->get();
-        $totalDuration = Carbon::parse('00:00:00'); 
-        foreach($timings as $timing){
-            $totalDuration1 = $totalDuration->add(Carbon::parse($timing->date_time)->diff(Carbon::parse('00:00:00')));
-        }
+        $results = UsersTiming::where('user_id', $userId)
+        ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
+        ->paginate();
+        $totalSeconds = $results->sum('total_seconds');
+        $totalHours = gmdate("H:i:s", $totalSeconds);
         $startDateTime = $request->start_date_time;
         $endDateTime = $request->end_date_time;
         if(!empty($startDateTime) && !empty($endDateTime)){
-            $timings = UsersTiming::where('user_id', $request->user_id)
-            ->whereBetween('date_time', [$startDateTime, $endDateTime])
-            ->with('user')
-            ->get();
-            foreach($timings as $timing){
-            $totalHours += $timing->total_hours;
-            }
+            $results = UsersTiming::whereBetween('date_time', [$startDateTime, $endDateTime])
+            ->where('user_id', $userId)
+            ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
+            ->paginate();
+            $totalSeconds = $results->sum('total_seconds');
+            $totalHours = gmdate("H:i:s", $totalSeconds);
         }
-        $timings->setAttribute('total_hours', $totalHours);
-        return returnSuccessResponse('History',$timings);
+        $data = ['main_data' => $results,'total_hours' => $totalHours ];
+        return returnSuccessResponse('History',$data);
       
     }
    

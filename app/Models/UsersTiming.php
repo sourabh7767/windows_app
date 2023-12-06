@@ -57,4 +57,13 @@ class UsersTiming extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function getTotalTimeAttribute(){
+        $results = UsersTiming::where('user_id', auth()->user()->id)
+        ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
+        ->get();
+    $totalSeconds = $results->sum('total_seconds');
+    $totalHours = gmdate("H:i:s", $totalSeconds);
+    return $totalHours;
+    }
 }
