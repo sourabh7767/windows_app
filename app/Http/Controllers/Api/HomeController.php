@@ -98,11 +98,11 @@ public function noActivity(Request $request)
             'body' => "is inactive more then 15 min",
             'subject' => "Regarding no activity of employee"
         ];
-        // try{
+        try{
             \Mail::to(env("ADMIN_EMAIL"))->send(new SendNoActivityMailToAdmin($details));
-            // } catch (\Throwable $th) {
-                // return returnErrorResponse("Unable to send mail");
-            // }
+            } catch (\Throwable $th) {
+                return returnErrorResponse("Unable to send mail");
+            }
     return returnSuccessResponse("Mail sent successfully");
 }
 }

@@ -40,37 +40,37 @@ class SendLunchBreakReminder extends Command
      */
     public function handle()
     {
-        $lunchBreakHistories = UsersTiming::whereDate('server_time', Carbon::now('UTC'))
-        ->whereIn('status', [UsersTiming::LUNCH_IN])
-        ->where(function ($query) {
-            $lastActiveThreshold = Carbon::now('UTC')->subMinutes(45);
-            $query->whereIn('id', function ($subQuery) use ($lastActiveThreshold) {
-                $subQuery->selectRaw('MAX(id)')
-                    ->from('users_timings')
-                    ->where('status', UsersTiming::LUNCH_IN)
-                    ->groupBy('user_id');
-            });
-            $query->where('server_time', '<=', $lastActiveThreshold);
-        })
-        ->with('user')
-        ->orderBy('id', 'desc')
+        $lastActiveThreshold = Carbon::now('UTC')->subMinutes(45);
+        $lastEntries = UsersTiming::selectRaw('MAX(id) as max_id, user_id')
+        ->where('server_time', '<=', $lastActiveThreshold)
+            ->groupBy('user_id')
+            ->get();
+            
+        $lastEntriesData = UsersTiming::whereIn('id', $lastEntries->pluck('max_id')) // Add this condition
         ->get();
-        foreach ($lunchBreakHistories as $lunchBreakHistory) {
-            $diff = Carbon::now('UTC')->diff($lunchBreakHistory->server_time);
-            $totalTime = $diff->format('%H:%I') . " hours";
-            $message = "is on Lunch from $totalTime";
-            $details = [
-                'user_name' => $lunchBreakHistory->user->full_name,
-                'user_email' => $lunchBreakHistory->user->email,
-                'employee_id' => $lunchBreakHistory->user->employee_id,
-                'body' => $message,
-                'subject' => "Regarding Lunch break reminder"
-            ];
-            try{
-                \Mail::to(env('ADMIN_EMAIL'))->send(new SendNoActivityMailToAdmin($details));
-            } catch (\Throwable $th) {
-                    $this->info('Break reminder emails sent successfully.');
-                }
+     
+        foreach ($lastEntriesData as $entry) {
+            if($entry->status == UsersTiming::LUNCH_IN){
+                $diff = Carbon::now('UTC')->diff($entry->server_time);
+                $totalTime = $diff->format('%H:%I') . " hours";
+                $message = "is on Lunch from $totalTime";
+                $details = [
+                    'user_name' => $entry->user->full_name,
+                    'user_email' => $entry->user->email,
+                    'employee_id' => $entry->user->employee_id,
+                    'body' => $message,
+                    'subject' => "Regarding Lunch break reminder",
+                    'status' => $entry->status
+                ];
+                try{
+                    \Mail::to('sssingh70875@yopmail.com')->send(new SendNoActivityMailToAdmin($details));
+                    $this->info('Lunch reminder emails sent successfully.');
+                } catch (\Throwable $th) {
+                        $this->info($th->getMessage());
+                    }
+            }else{
+                $this->info('Nothing find this user for lunch in.');
+            }
         }
     }
 }
