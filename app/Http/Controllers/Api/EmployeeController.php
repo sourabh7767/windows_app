@@ -87,36 +87,36 @@ class EmployeeController extends Controller
     }
     public function getHistory(Request $request)
     {
-        $userId = $request->user_id;
-        $totalHours = 0;
-        if(empty($userId)){
-            $userId = auth()->user()->id;
-        }
-        $timings = UsersTiming::where('user_id',$userId)->with('user')->get();
-        return returnSuccessResponse('History',$timings);
-      
         // $userId = $request->user_id;
         // $totalHours = 0;
         // if(empty($userId)){
         //     $userId = auth()->user()->id;
         // }
-        // $results = UsersTiming::where('user_id', $userId)
-        // ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
-        // ->paginate();
-        // $totalSeconds = $results->sum('total_seconds');
-        // $totalHours = gmdate("H:i:s", $totalSeconds);
-        // $startDateTime = $request->start_date_time;
-        // $endDateTime = $request->end_date_time;
-        // if(!empty($startDateTime) && !empty($endDateTime)){
-        //     $results = UsersTiming::whereBetween('date_time', [$startDateTime, $endDateTime])
-        //     ->where('user_id', $userId)
-        //     ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
-        //     ->paginate();
-        //     $totalSeconds = $results->sum('total_seconds');
-        //     $totalHours = gmdate("H:i:s", $totalSeconds);
-        // }
-        // $data = ['main_data' => $results,'total_hours' => $totalHours ];
-        // return returnSuccessResponse('History',$data);
+        // $timings = UsersTiming::where('user_id',$userId)->with('user')->get();
+        // return returnSuccessResponse('History',$timings);
+      
+        $userId = $request->user_id;
+        $totalHours = 0;
+        if(empty($userId)){
+            $userId = auth()->user()->id;
+        }
+        $results = UsersTiming::where('user_id', $userId)
+        ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
+        ->paginate();
+        $totalSeconds = $results->sum('total_seconds');
+        $totalHours = gmdate("H:i:s", $totalSeconds);
+        $startDateTime = $request->start_date_time;
+        $endDateTime = $request->end_date_time;
+        if(!empty($startDateTime) && !empty($endDateTime)){
+            $results = UsersTiming::whereBetween('date_time', [$startDateTime, $endDateTime])
+            ->where('user_id', $userId)
+            ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
+            ->paginate();
+            $totalSeconds = $results->sum('total_seconds');
+            $totalHours = gmdate("H:i:s", $totalSeconds);
+        }
+        $data = ['main_data' => $results,'total_hours' => $totalHours ];
+        return returnSuccessResponse('History',$data);
     }
    
 }
