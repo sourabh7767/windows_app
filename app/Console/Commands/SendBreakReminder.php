@@ -43,12 +43,12 @@ class SendBreakReminder extends Command
         $lastActiveThreshold = Carbon::now('UTC')->subMinutes(15);
         $lastEntries = UsersTiming::selectRaw('MAX(id) as max_id, user_id')
             ->groupBy('user_id')
-            ->where('server_time', '<=', $lastActiveThreshold)
+            // ->where('server_time', '<=', $lastActiveThreshold)
             ->get();
         $lastEntriesData = UsersTiming::whereIn('id', $lastEntries->pluck('max_id'))
         ->get();
         foreach ($lastEntriesData as $entry) {
-            if($entry->status == UsersTiming::BREAK_IN){
+            if($entry->status == UsersTiming::BREAK_IN && $entry->server_time < $lastActiveThreshold){
                 $diff = Carbon::now('UTC')->diff($entry->server_time);
                 $totalTime = $diff->format('%H:%I') . " hours";
                 $message = "is on break from $totalTime";

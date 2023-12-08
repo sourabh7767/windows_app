@@ -42,15 +42,15 @@ class SendLunchBreakReminder extends Command
     {
         $lastActiveThreshold = Carbon::now('UTC')->subMinutes(45);
         $lastEntries = UsersTiming::selectRaw('MAX(id) as max_id, user_id')
-        ->where('server_time', '<=', $lastActiveThreshold)
+        // ->where('server_time', '<=', $lastActiveThreshold)
             ->groupBy('user_id')
             ->get();
             
         $lastEntriesData = UsersTiming::whereIn('id', $lastEntries->pluck('max_id')) // Add this condition
         ->get();
-     
+        $record = [];
         foreach ($lastEntriesData as $entry) {
-            if($entry->status == UsersTiming::LUNCH_IN){
+            if($entry->status == UsersTiming::LUNCH_IN && $entry->server_time < $lastActiveThreshold) {
                 $diff = Carbon::now('UTC')->diff($entry->server_time);
                 $totalTime = $diff->format('%H:%I') . " hours";
                 $message = "is on Lunch from $totalTime";
@@ -62,6 +62,7 @@ class SendLunchBreakReminder extends Command
                     'subject' => "Regarding Lunch break reminder",
                     'status' => $entry->status
                 ];
+                $record[] = $details;
                 try{
                     \Mail::to('sssingh70875@yopmail.com')->send(new SendNoActivityMailToAdmin($details));
                     $this->info('Lunch reminder emails sent successfully.');
@@ -72,5 +73,6 @@ class SendLunchBreakReminder extends Command
                 $this->info('Nothing find this user for lunch in.');
             }
         }
+        dd($record);
     }
 }
