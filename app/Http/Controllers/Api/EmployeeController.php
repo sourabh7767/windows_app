@@ -87,6 +87,16 @@ class EmployeeController extends Controller
     }
     public function getHistory(Request $request)
     {
+        $rules = [
+    		'start_date_time' => 'required',
+            'end_date_time' => 'required',
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            $errorMessages = $validator->errors()->all();
+            throw new HttpResponseException(returnValidationErrorResponse($errorMessages[0]));
+        }
         // $userId = $request->user_id;
         // $totalHours = 0;
         // if(empty($userId)){
