@@ -100,17 +100,22 @@ class EmployeeController extends Controller
         if(empty($userId)){
             $userId = auth()->user()->id;
         }
+        $startDateTime = $request->start_date_time;
+        $endDateTime = $request->end_date_time;
+        
         $results = UsersTiming::where('user_id', $userId)
+        whereBetween('date_time', [$startDateTime, $endDateTime])
         ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
+        ->orderBy("id","desc")
         ->paginate();
         $totalSeconds = $results->sum('total_seconds');
         $totalHours = gmdate("H:i:s", $totalSeconds);
-        $startDateTime = $request->start_date_time;
-        $endDateTime = $request->end_date_time;
+        
         if(!empty($startDateTime) && !empty($endDateTime)){
             $results = UsersTiming::whereBetween('date_time', [$startDateTime, $endDateTime])
             ->where('user_id', $userId)
             ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
+            ->orderBy("id","desc")
             ->paginate();
             $totalSeconds = $results->sum('total_seconds');
             $totalHours = gmdate("H:i:s", $totalSeconds);
