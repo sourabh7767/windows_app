@@ -102,9 +102,9 @@ class EmployeeController extends Controller
         }
         $startDateTime = $request->start_date_time;
         $endDateTime = $request->end_date_time;
-        
+
         $results = UsersTiming::where('user_id', $userId)
-        whereBetween('date_time', [$startDateTime, $endDateTime])
+        ->whereBetween('date_time', [$startDateTime, $endDateTime])
         ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
         ->orderBy("id","desc")
         ->paginate();
