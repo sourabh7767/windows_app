@@ -47,8 +47,11 @@ class SendBreakReminder extends Command
             ->get();
         $lastEntriesData = UsersTiming::whereIn('id', $lastEntries->pluck('max_id'))
         ->get();
+        $abc = [];
         foreach ($lastEntriesData as $entry) {
-            if($entry->status == UsersTiming::BREAK_IN && $entry->server_time < $lastActiveThreshold){
+            $diffInMinutes = Carbon::now('UTC')->diffInMinutes($entry->server_time);
+            if($entry->status == UsersTiming::BREAK_IN && ($diffInMinutes > 15)){
+                $abc[$entry->id] =  $diffInMinutes.'/////'.Carbon::now('UTC');
                 $diff = Carbon::now('UTC')->diff($entry->server_time);
                 $totalTime = $diff->format('%H:%I') . " hours";
                 $message = "is on break from $totalTime";
@@ -60,6 +63,7 @@ class SendBreakReminder extends Command
                     'subject' => "Regarding Lunch break reminder",
                     'status' => $entry->status
                 ];
+               
                 try{
                     \Mail::to('sssingh70875@yopmail.com')->send(new SendNoActivityMailToAdmin($details));
                     $this->info('Break reminder emails sent successfully.');

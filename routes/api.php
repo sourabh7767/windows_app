@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->namespace('Api')->group(function () {
    
-
+	Route::get('/export', 'EmployeeController@exportTimings')->name('exportTimings');
 	Route::prefix('admin')->name('admin.')->group(function () {
 		Route::post('/adminLogin', 'UserController@adminLogin')->name('adminLogin');
 		Route::middleware(['auth:sanctum'])->group(function () {

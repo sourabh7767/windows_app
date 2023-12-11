@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exports\TimingExport;
 use App\Http\Controllers\Controller;
 use App\Models\Ticket;
 use App\Models\UsersTiming;
@@ -10,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Excel;
 use Validator;
 use Auth;
 class EmployeeController extends Controller
@@ -132,6 +134,16 @@ class EmployeeController extends Controller
         }
         $data = ['main_data' => $results,'total_hours' => $totalHours ];
         return returnSuccessResponse('History',$data);
+    }
+    public function exportTimings(Request $request)
+    {
+        $startDate = $request->input('start_date_time');
+        $endDate = $request->input('end_date_time');
+        $userId = $request->input('user_id');
+        
+        // Add validation for start_date and end_date if needed
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new TimingExport($startDate, $endDate,$userId), 'timing_export.xlsx');
     }
    
 }
