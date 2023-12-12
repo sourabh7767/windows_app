@@ -22,6 +22,7 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('send:break-reminder')->everyMinute(); // Adjust the schedule as needed
         $schedule->command('send:lunch-break-reminder')->everyMinute();
+        $schedule->command('daily:logout')->dailyAt('21:00');
     }
 
 

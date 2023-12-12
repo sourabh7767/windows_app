@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\EmployeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
+Route::get('/export', [EmployeeController::class, 'exportTimings'])->name('exportTimings');
 Route::middleware('prevent-back-history')->group(function (){
 
     Route::get('/clear-cache', function () {
@@ -24,7 +26,6 @@ Route::middleware('prevent-back-history')->group(function (){
     });
 
     Auth::routes();
-
     Route::middleware('auth')->group(function(){
 
         Route::get('/', 'HomeController@index')->name('user.home');
