@@ -140,9 +140,6 @@ class EmployeeController extends Controller
         $startDate = $request->input('start_date_time');
         $endDate = $request->input('end_date_time');
         $userId = $request->input('user_id');
-        
-        // Add validation for start_date and end_date if needed
-
         return \Maatwebsite\Excel\Facades\Excel::download(new TimingExport($startDate, $endDate,$userId), 'timing_export.xlsx');
     }
    
