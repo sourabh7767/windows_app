@@ -40,17 +40,16 @@ class SendLunchBreakReminder extends Command
      */
     public function handle()
     {
-        $lastActiveThreshold = Carbon::now('UTC')->subMinutes(45);
         $lastEntries = UsersTiming::selectRaw('MAX(id) as max_id, user_id')
-        ->where('server_time', '<=', $lastActiveThreshold)
+        // ->where('server_time', '<=', $lastActiveThreshold)
             ->groupBy('user_id')
             ->get();
             
         $lastEntriesData = UsersTiming::whereIn('id', $lastEntries->pluck('max_id')) // Add this condition
         ->get();
-     
         foreach ($lastEntriesData as $entry) {
-            if($entry->status == UsersTiming::LUNCH_IN){
+            $diffInMinutes = Carbon::now('UTC')->diffInMinutes($entry->server_time);
+            if($entry->status == UsersTiming::LUNCH_IN && $diffInMinutes >= 45) {
                 $diff = Carbon::now('UTC')->diff($entry->server_time);
                 $totalTime = $diff->format('%H:%I') . " hours";
                 $message = "is on Lunch from $totalTime";
