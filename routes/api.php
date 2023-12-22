@@ -23,6 +23,8 @@ Route::prefix('v1')->namespace('Api')->group(function () {
 			Route::post('/createEmploye', 'UserController@createEmploye')->name('createEmploye');
 			Route::post('/updateProfile', 'UserController@updateProfile')->name('updateProfile');
 			Route::post('/deleteEmploye', 'UserController@deleteEmploye')->name('deleteEmploye');
+			Route::post('/update-master-data', 'UserController@updateMasterData')->name('updateMasterData');
+			Route::get('/get-master-data', 'UserController@getMasterData')->name('getMasterData');
 			Route::get('/getEmployeWithSearch', 'UserController@getEmployeWithSearch')->name('getEmployeWithSearch');
 		});
 	});
