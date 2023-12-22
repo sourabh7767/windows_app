@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\MasterData;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Exceptions\HttpResponseException;
@@ -27,6 +28,8 @@ class UserController extends Controller
             $userObj->tokens()->delete();
             $authToken = $userObj->createToken('authToken')->plainTextToken;
             $returnArr = $userObj->jsonResponseAdmin();
+            $masterData = MasterData::get();
+            $returnArr['master_data'] = $masterData;
             $returnArr['auth_token'] = $authToken;
             return returnSuccessResponse('Admin login',$returnArr);
         }
@@ -133,6 +136,31 @@ class UserController extends Controller
         if($userObj->delete()){
             return returnSuccessResponse('Employee deleted successfully',User::getAllUsersResponse());
         }
+    }
+    public function updateMasterData(Request $request)
+    {
+        $rules = [
+            'master_key' =>'required',
+            'master_value' =>'required',
+        ];
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            $errorMessages = $validator->errors()->all();
+            throw new HttpResponseException(returnValidationErrorResponse($errorMessages[0]));
+        }
+        $masterDataObj = MasterData::where('master_key',$request->master_key)->first();
+        if($masterDataObj){
+            $masterDataObj->master_value = !empty($request->master_value) ? $request->master_value : $masterDataObj->master_value;
+        }
+        if($masterDataObj->save()){
+            return returnSuccessResponse("master data updated successfuly",$masterDataObj);
+        }
+    }
+
+    public function getMasterData()
+    {
+        $masterData = MasterData::get();
+        return returnSuccessResponse("get master data succesfully",$masterData);
     }
    
 }

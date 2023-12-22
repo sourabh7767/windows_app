@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Exports\TimingExport;
 use App\Http\Controllers\Controller;
+use App\Models\MasterData;
 use App\Models\Ticket;
 use App\Models\UsersTiming;
 use Carbon\Carbon;
@@ -60,6 +61,8 @@ class EmployeeController extends Controller
         $userObj->tokens()->delete();
         $authToken = $userObj->createToken('authToken')->plainTextToken;
         $returnArr = $userObj->jsonResponse();
+        $masterData = MasterData::get();
+        $returnArr['master_data'] = $masterData;
         $returnArr['auth_token'] = $authToken;
 
         return returnSuccessResponse('Employee logged in successfully', $returnArr);
