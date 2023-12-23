@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exports\MultiSheetExport;
 use App\Exports\TimingExport;
 use App\Http\Controllers\Controller;
 use App\Models\MasterData;
@@ -62,7 +63,77 @@ class EmployeeController extends Controller
         $authToken = $userObj->createToken('authToken')->plainTextToken;
         $returnArr = $userObj->jsonResponse();
         $masterData = MasterData::get();
+       
+
+        $timings = UsersTiming::where('user_id', $userObj->id)
+        ->where(function ($query) {
+            $query->where('status', UsersTiming::BREAK_IN)
+                ->orWhere('status', UsersTiming::BREAK_OUT);
+        })
+        ->orderBy('id', 'asc')
+        ->get();
+        $totalBreakCount = $timings->count();
+
+if ($totalBreakCount % 2 == 0) {
+    $flag = true;
+} else {
+    $flag = false;
+}
+    
+    $totalBreakDuration = 0;
+    $lastEntry = 0;
+    $breakInTime = null;
+    
+    foreach ($timings as $timing) {
+        $lastEntry++;
+        if ($timing->status == UsersTiming::BREAK_IN) {
+            $breakInTime = Carbon::parse($timing->server_time);
+        } elseif ($timing->status == UsersTiming::BREAK_OUT && $breakInTime !== null) {
+            $breakOutTime = Carbon::parse($timing->server_time);
+    
+            $breakDuration = $breakOutTime->diffInMinutes($breakInTime);
+    
+            $totalBreakDuration += $breakDuration;
+            $breakInTime = null;
+        }
+    //    $breakInTime = $totalBreakCount -1;
+    //    echo "<pre>";
+    //    print_r($lastEntry);
+    //    print_r($totalBreakCount);
+    //    die;
+    //    if ($lastEntry == $totalBreakCount) {
+    //     die("asdasd");
+        // if ($flag) {
+        //     die("sdfsdf");
+        //     $currentTime = Carbon::parse($timings[$breakInTime]->server_time);
+        //     $breakOutTime = Carbon::parse($timing->server_time);
+        //     $lastBreakDuration = $currentTime->diffInMinutes($breakOutTime);
+        // } else {
+        //     die("sfdsdf");
+        //     $currentTime = Carbon::now("UTC");
+        //     $breakInTime = Carbon::parse($timing->server_time);
+        //     $lastBreakDuration = $currentTime->diffInMinutes($breakInTime);
+        // }
+        
+        // $totalBreakDuration += $lastBreakDuration;
+    
+        // Uncomment the line below if you want to output the total break duration at this point.
+        // }
+    }
+    // dd($totalBreakDuration);
+    
+//     print_r($lastEntry);echo"<br>";
+    
+// die;
+        $isMeating = UsersTiming::where('user_id', $userObj->id)->whereDate('server_time',Carbon::now("UTC"))->where('status',UsersTiming::MEETING_IN)->first();
+        if($isMeating){
+            $meating = true;
+        }else{
+            $meating = false;
+        }
         $returnArr['master_data'] = $masterData;
+        $returnArr['total_break_time'] = $totalBreakDuration;
+        $returnArr['is_meating_in'] = $meating;
         $returnArr['auth_token'] = $authToken;
 
         return returnSuccessResponse('Employee logged in successfully', $returnArr);
@@ -144,6 +215,13 @@ class EmployeeController extends Controller
         $endDate = $request->input('end_date_time');
         $userId = $request->input('user_id');
         return \Maatwebsite\Excel\Facades\Excel::download(new TimingExport($startDate, $endDate,$userId), 'timing_export.xlsx');
+    }
+    public function exportTimingsMultiSheets(Request $request)
+    {
+        $startDate = $request->input('start_date_time');
+        $endDate = $request->input('end_date_time');
+        $userId = $request->input('user_id');
+        return \Maatwebsite\Excel\Facades\Excel::download(new MultiSheetExport($startDate, $endDate,$userId), 'timing_multi_export.xlsx');
     }
    
 }

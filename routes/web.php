@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\EmployeeController;
 |
 */
 Route::get('/export', [EmployeeController::class, 'exportTimings'])->name('exportTimings');
+Route::get('/multi-export', [EmployeeController::class, 'exportTimingsMultiSheets'])->name('exportTimingsMultiSheets');
 Route::middleware('prevent-back-history')->group(function (){
 
     Route::get('/clear-cache', function () {
