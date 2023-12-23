@@ -64,7 +64,6 @@ class EmployeeController extends Controller
         $returnArr = $userObj->jsonResponse();
         $masterData = MasterData::get();
        
-
         $timings = UsersTiming::where('user_id', $userObj->id)
         ->where(function ($query) {
             $query->where('status', UsersTiming::BREAK_IN)
@@ -74,57 +73,46 @@ class EmployeeController extends Controller
         ->get();
         $totalBreakCount = $timings->count();
 
-if ($totalBreakCount % 2 == 0) {
-    $flag = true;
-} else {
-    $flag = false;
-}
-    
-    $totalBreakDuration = 0;
-    $lastEntry = 0;
-    $breakInTime = null;
-    
-    foreach ($timings as $timing) {
-        $lastEntry++;
-        if ($timing->status == UsersTiming::BREAK_IN) {
-            $breakInTime = Carbon::parse($timing->server_time);
-        } elseif ($timing->status == UsersTiming::BREAK_OUT && $breakInTime !== null) {
-            $breakOutTime = Carbon::parse($timing->server_time);
-    
-            $breakDuration = $breakOutTime->diffInMinutes($breakInTime);
-    
-            $totalBreakDuration += $breakDuration;
-            $breakInTime = null;
+        if ($totalBreakCount % 2 == 0) {
+            $flag = true;
+        } else {
+            $flag = false;
         }
-    //    $breakInTime = $totalBreakCount -1;
-    //    echo "<pre>";
-    //    print_r($lastEntry);
-    //    print_r($totalBreakCount);
-    //    die;
-    //    if ($lastEntry == $totalBreakCount) {
-    //     die("asdasd");
-        // if ($flag) {
-        //     die("sdfsdf");
-        //     $currentTime = Carbon::parse($timings[$breakInTime]->server_time);
-        //     $breakOutTime = Carbon::parse($timing->server_time);
-        //     $lastBreakDuration = $currentTime->diffInMinutes($breakOutTime);
-        // } else {
-        //     die("sfdsdf");
-        //     $currentTime = Carbon::now("UTC");
-        //     $breakInTime = Carbon::parse($timing->server_time);
-        //     $lastBreakDuration = $currentTime->diffInMinutes($breakInTime);
-        // }
+    
+        $totalBreakDuration = 0;
+        $lastEntry = 0;
+        $breakInTime = null;
         
-        // $totalBreakDuration += $lastBreakDuration;
+        foreach ($timings as $timing) {
+            $lastEntry++;
+            if ($timing->status == UsersTiming::BREAK_IN) {
+                $breakInTime = Carbon::parse($timing->server_time);
+            } elseif ($timing->status == UsersTiming::BREAK_OUT && $breakInTime !== null) {
+                
+                $breakOutTime = Carbon::parse($timing->server_time);
+                $breakDuration = $breakOutTime->diffInMinutes($breakInTime);
+                 
+                $totalBreakDuration += $breakDuration;
+                
+                $breakInTime = null;
+            }
+            $breakInTimeIndex = $totalBreakCount -1;
+            if ($lastEntry == $totalBreakCount) {
+                if ($flag) {
+                    $currentTime = Carbon::parse($timings[$breakInTimeIndex]->server_time);
+                    $breakOutTime = Carbon::parse($timing->server_time);
+                    $lastBreakDuration = $currentTime->diffInMinutes($breakOutTime);
+                } else {
+                    $currentTime = Carbon::now("UTC");
+                    // $breakInTime = Carbon::parse($timing->server_time)->setTimezone('UTC');
+                    // echo "<pre>";print_r($currentTime);
+                    // echo "<pre>";print_r($breakInTime);die;
+                    $lastBreakDuration = $currentTime->diffInMinutes($timing->server_time);
+                }
+                $totalBreakDuration += $lastBreakDuration;
+            }
+        }
     
-        // Uncomment the line below if you want to output the total break duration at this point.
-        // }
-    }
-    // dd($totalBreakDuration);
-    
-//     print_r($lastEntry);echo"<br>";
-    
-// die;
         $isMeating = UsersTiming::where('user_id', $userObj->id)->whereDate('server_time',Carbon::now("UTC"))->where('status',UsersTiming::MEETING_IN)->first();
         if($isMeating){
             $meating = true;
