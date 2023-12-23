@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 use Maatwebsite\Excel\Concerns\WithTitle;
 
-class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleSheets
+class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleSheets, WithTitle
 {
     protected $startDate;
     protected $userId;
@@ -57,7 +57,7 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
 
     public function sheets(): array
     {
-        $users = User::all();
+        $users = User::where("role",User::ROLE_EMPLOYEE)->get();
         $sheets = [];
     
         foreach ($users as $user) {
@@ -71,7 +71,7 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                 $user = User::find($user->id);
                 $sheets[] = new TimingExportSheet($this->startDate, $this->endDate, $user->id);
             } else {
-                $sheets[] = new class ($user) implements FromCollection, WithHeadings {
+                $sheets[] = new class ($user) implements FromCollection, WithHeadings,WithTitle {
                     private $user;
     
                     public function __construct($user)
@@ -83,7 +83,13 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                     {
                         return collect([
                             [
-                                'Email' => $this->user->email,
+                                'id' => "",
+                                'Email' => "",
+                                'Employee Id' => "",
+                                'Date Time' => "",
+                                'status' => "",
+                                'UTC Time' => "",
+                                'Total hours' => "",
                             ],
                         ]);
                     }
@@ -91,8 +97,20 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                     public function headings(): array
                     {
                         return [
+                            'id',
                             'Email',
+                            'Employee Id',
+                            'Date Time',
+                            'status',
+                            'UTC Time',
+                            'Total hours',
                         ];
+                    }
+                    public function title(): string
+                    {
+                        return $this->user->id ? $this->user->employee_id : "";
+                        // $user = User::find($this->user->id);
+                        // return  $user ? $user->employee_id : 'User';
                     }
                 };
             }
@@ -100,7 +118,12 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
     
         return $sheets;
     }
-    
+ 
+    public function title(): string
+    {
+        $user = User::find($this->userId);
+        return  $user ? $user->employee_id : 'User';
+    }
    
 }
 
