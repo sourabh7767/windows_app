@@ -7,9 +7,9 @@ use App\Models\UsersTiming;
 use Illuminate\Support\Carbon;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-// use Maatwebsite\Excel\Concerns\WithTitle;
+use Maatwebsite\Excel\Concerns\WithTitle;
 
-class TimingExportSheet implements FromCollection, WithHeadings
+class TimingExportSheet implements FromCollection, WithHeadings,WithTitle
 {
     protected $startDate;
     protected $userId;
@@ -52,9 +52,9 @@ class TimingExportSheet implements FromCollection, WithHeadings
         ];
     }
 
-    // public function title(): string
-    // {
-    //     $user = User::find($this->userId);
-    //     return  $user ? $user->employee_id : 'User';
-    // }
+    public function title(): string
+    {
+        $user = User::find($this->userId);
+        return  $user ? $user->employee_id : 'User';
+    }
 }
