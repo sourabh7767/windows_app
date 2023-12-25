@@ -72,7 +72,7 @@ class EmployeeController extends Controller
         })
         ->orderBy('id', 'asc')
         ->get();
-        echo "<pre>";print_r($timings);die;
+        echo "<pre>";print_r($timings->toArray());die;
         $totalBreakCount = $timings->count();
 
         if ($totalBreakCount % 2 == 0) {
