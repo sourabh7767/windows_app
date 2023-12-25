@@ -65,12 +65,14 @@ class EmployeeController extends Controller
         $masterData = MasterData::get();
        
         $timings = UsersTiming::where('user_id', $userObj->id)
+        ->whereDate('server_time',Carbon::now("UTC"))
         ->where(function ($query) {
             $query->where('status', UsersTiming::BREAK_IN)
                 ->orWhere('status', UsersTiming::BREAK_OUT);
         })
         ->orderBy('id', 'asc')
         ->get();
+        echo "<pre>";print_r($timings);die;
         $totalBreakCount = $timings->count();
 
         if ($totalBreakCount % 2 == 0) {
