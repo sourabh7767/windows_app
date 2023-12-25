@@ -90,10 +90,9 @@ class EmployeeController extends Controller
             if ($timing->status == UsersTiming::BREAK_IN) {
                 $breakInTime = Carbon::parse($timing->server_time);
             } elseif ($timing->status == UsersTiming::BREAK_OUT && $breakInTime !== null) {
-                echo $breakInTime; echo "<br>";
-                echo $breakInTime; print_r($timing->server_time);die;
+                
                 $breakOutTime = Carbon::parse($timing->server_time);
-                $breakDuration = $breakOutTime->diffInMinutes($breakInTime);
+                $breakDuration = $breakOutTime->diffInSeconds($breakInTime);
                  
                 $totalBreakDuration += $breakDuration;
                 
@@ -105,13 +104,13 @@ class EmployeeController extends Controller
                 if ($flag) {
                     $currentTime = Carbon::parse($timings[$breakInTimeIndex]->server_time);
                     $breakOutTime = Carbon::parse($timing->server_time);
-                    $lastBreakDuration = $currentTime->diffInMinutes($breakOutTime);
+                    $lastBreakDuration = $currentTime->diffInSeconds($breakOutTime);
                 } else {
                     $currentTime = Carbon::now("UTC");
                     // $breakInTime = Carbon::parse($timing->server_time)->setTimezone('UTC');
                     // echo "<pre>";print_r($currentTime);
                     // echo "<pre>";print_r($breakInTime);die;
-                    $lastBreakDuration = $currentTime->diffInMinutes($timing->server_time);
+                    $lastBreakDuration = $currentTime->diffInSeconds($timing->server_time);
                 }
                 $totalBreakDuration += $lastBreakDuration;
             }
