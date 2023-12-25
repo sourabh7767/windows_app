@@ -93,14 +93,14 @@ class EmployeeController extends Controller
                 
                 $breakOutTime = Carbon::parse($timing->server_time);
                 $breakDuration = $breakOutTime->diffInMinutes($breakInTime);
-                 
+                 echo $breakDuration;die;
                 $totalBreakDuration += $breakDuration;
                 
                 $breakInTime = null;
             }
             $breakInTimeIndex = $totalBreakCount -1;
             if ($lastEntry == $totalBreakCount) {
-                echo $totalBreakDuration;die;
+                
                 if ($flag) {
                     $currentTime = Carbon::parse($timings[$breakInTimeIndex]->server_time);
                     $breakOutTime = Carbon::parse($timing->server_time);
