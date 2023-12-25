@@ -186,6 +186,7 @@ class EmployeeController extends Controller
         $totalHours = gmdate("H:i:s", $totalSeconds);
         
         if(!empty($startDateTime) && !empty($endDateTime)){
+            $endDateTime = date('Y-m-d H:i:s', strtotime($endDateTime . ' +1 day'));
             $results = UsersTiming::whereBetween('date_time', [$startDateTime, $endDateTime])
             ->where('user_id', $userId)
             ->selectRaw('*, TIME_TO_SEC(total_hours) as total_seconds')
