@@ -55,6 +55,6 @@ class TimingExportSheet implements FromCollection, WithHeadings,WithTitle
     public function title(): string
     {
         $user = User::find($this->userId);
-        return  $user ? $user->employee_id : 'User';
+        return  $user ? $user->full_name : 'User';
     }
 }

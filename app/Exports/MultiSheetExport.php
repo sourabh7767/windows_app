@@ -108,7 +108,7 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                     }
                     public function title(): string
                     {
-                        return $this->user->id ? $this->user->employee_id : "";
+                        return $this->user->id ? $this->user->full_name : "";
                         // $user = User::find($this->user->id);
                         // return  $user ? $user->employee_id : 'User';
                     }
