@@ -29,7 +29,7 @@ class TimingExportSheet implements FromCollection, WithHeadings,WithTitle
                 Carbon::parse($this->startDate)->startOfDay(),
                 Carbon::parse($this->endDate)->endOfDay(),
             ])->select('id', 'user_id', 'employee_id', 'date_time', 'status', 'server_time', 'total_hours')
-            ->get();
+            ->get()->toArray();
         $userdata = User::where('id',$this->userId)->first();
         if($userdata){
             $email = $userdata->email; 
