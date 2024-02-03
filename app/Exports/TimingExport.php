@@ -52,8 +52,8 @@ class TimingExport implements FromCollection,WithHeadings
             //     'total_hours' => $entry->total_hours,
             // ];
         }
-        unset($entry);
-        echo "<pre>";print_r($entries);die;
+        // unset($entry);
+        // echo "<pre>";print_r($entries);die;
         return $entries;
     }
 
