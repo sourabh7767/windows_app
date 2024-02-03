@@ -33,6 +33,7 @@ class TimingExport implements FromCollection,WithHeadings
         foreach ($entries as $entry) {
             $entry->status = UsersTiming::getStatusName($entry->status);
             $entry->user_id = User::where('id',$entry->user_id)->first()->email;
+            $entry->name = User::where('id',$entry->user_id)->first()->full_name;
         }
         return $entries;
     }
@@ -42,6 +43,7 @@ class TimingExport implements FromCollection,WithHeadings
         // Define the header row
         return [
             'id',
+            'Name',
             'Email',
             'Employee Id',
             'Date Time',
