@@ -33,7 +33,7 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                 Carbon::parse($this->endDate)->endOfDay(),
             ])->select('id', 'user_id', 'employee_id', 'date_time', 'status', 'server_time', 'total_hours')
             ->get()->toArray();
-        
+            echo "<pre>";print_r($entries);die;
             $userdata = User::where('id',$this->userId)->first();
             if($userdata){
                 $email = $userdata->email; 
@@ -57,7 +57,7 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                 ];
             }
              unset($entry);
-
+            
         // foreach ($entries as $entry) {
         //     $entry->status = UsersTiming::getStatusName($entry->status);
         //     $entry->user_id = User::where('id', $entry->user_id)->first()->email;
