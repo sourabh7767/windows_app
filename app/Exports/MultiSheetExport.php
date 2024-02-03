@@ -84,6 +84,7 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                         return collect([
                             [
                                 'id' => "",
+                                'Name' => "",
                                 'Email' => "",
                                 'Employee Id' => "",
                                 'Date Time' => "",
@@ -98,6 +99,7 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                     {
                         return [
                             'id',
+                            "Name",
                             'Email',
                             'Employee Id',
                             'Date Time',
