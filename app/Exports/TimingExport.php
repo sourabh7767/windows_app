@@ -54,7 +54,7 @@ class TimingExport implements FromCollection,WithHeadings
         }
         // unset($entry);
         // echo "<pre>";print_r($entries);die;
-        return collection($entries);
+        return collect($entries);
     }
 
      public function headings(): array
