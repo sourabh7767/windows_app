@@ -32,12 +32,36 @@ class MultiSheetExport implements  FromCollection, WithHeadings, WithMultipleShe
                 Carbon::parse($this->startDate)->startOfDay(),
                 Carbon::parse($this->endDate)->endOfDay(),
             ])->select('id', 'user_id', 'employee_id', 'date_time', 'status', 'server_time', 'total_hours')
-            ->get();
+            ->get()->toArray();
+        
+            $userdata = User::where('id',$this->userId)->first();
+            if($userdata){
+                $email = $userdata->email; 
+                $name = $userdata->full_name;
+            }else{
+                $email = ""; 
+                $name = "";
+            }
+            foreach ($entries as &$entry) {
+                $status = UsersTiming::getStatusName($entry["status"]);
+    
+                $entry = [
+                    'id' => $entry["id"],
+                    'name' => $name,
+                    'email' => $email,
+                    'employee_id' => $entry["employee_id"],
+                    'date_time' => $entry["date_time"],
+                    'status' => $status,
+                    'server_time' => $entry["server_time"],
+                    'total_hours' => $entry["total_hours"],
+                ];
+            }
+             unset($entry);
 
-        foreach ($entries as $entry) {
-            $entry->status = UsersTiming::getStatusName($entry->status);
-            $entry->user_id = User::where('id', $entry->user_id)->first()->email;
-        }
+        // foreach ($entries as $entry) {
+        //     $entry->status = UsersTiming::getStatusName($entry->status);
+        //     $entry->user_id = User::where('id', $entry->user_id)->first()->email;
+        // }
 
         return $entries;
     }
