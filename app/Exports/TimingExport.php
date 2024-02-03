@@ -30,10 +30,18 @@ class TimingExport implements FromCollection,WithHeadings
             Carbon::parse($this->endDate)->endOfDay(),
         ])->select('id', 'user_id','employee_id','date_time', 'status', 'server_time','total_hours')
         ->get();;
+        $userdata = User::where('id',$this->userId)->first();
+        if($userdata){
+            $email = $userdata->email; 
+            $name = $userdata->full_name;
+        }else{
+            $email = ""; 
+            $name = "";
+        }
         foreach ($entries as $entry) {
             $entry->status = UsersTiming::getStatusName($entry->status);
-            $entry->user_id = User::where('id',$entry->user_id)->first()->email;
-            $entry->name = User::where('id',$entry->user_id)->first()->full_name;
+            $entry->user_id = $email;
+            $entry->name = $name;
         }
         return $entries;
     }
