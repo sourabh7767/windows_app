@@ -58,7 +58,7 @@ class TimingExportSheet implements FromCollection, WithHeadings,WithTitle
         //     $entry->user_id = User::where('id', $entry->user_id)->first()->email;
         // }
 
-        return $entries;
+        return collect($entries);
     }
 
     public function headings(): array
