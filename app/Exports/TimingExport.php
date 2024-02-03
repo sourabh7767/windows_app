@@ -39,18 +39,18 @@ class TimingExport implements FromCollection,WithHeadings
             $name = "";
         }
         foreach ($entries as &$entry) {
-            $status = UsersTiming::getStatusName($entry->status);
+            // $status = UsersTiming::getStatusName($entry["status"]);
 
-            $entry = [
-                'status' => $status,
-                'name' => $name,
-                'user_id' => $email,
-                'id' => $entry->id,
-                'employee_id' => $entry->employee_id,
-                'date_time' => $entry->date_time,
-                'server_time' => $entry->server_time,
-                'total_hours' => $entry->total_hours,
-            ];
+            // $entry = [
+            //     'status' => $status,
+            //     'name' => $name,
+            //     'user_id' => $email,
+            //     'id' => $entry->id,
+            //     'employee_id' => $entry->employee_id,
+            //     'date_time' => $entry->date_time,
+            //     'server_time' => $entry->server_time,
+            //     'total_hours' => $entry->total_hours,
+            // ];
         }
         unset($entry);
         echo "<pre>";print_r($entries);die;
